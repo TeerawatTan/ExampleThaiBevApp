@@ -1,0 +1,127 @@
+﻿@model IEnumerable<ExampleThaiBevApp.Dtos.PersonDto>
+
+@{
+    ViewData["Title"] = "Person";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="bi bi-Person-fill"></i> Person Management (IT 01-1)</h2>
+        <div>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">Add</button>
+        </div>
+    </div>
+
+    <table class="table table-hover border">
+        <thead class="table-light">
+            <tr>
+                <th>Id</th>
+                <th>ชื่อ - นามสกุล</th>
+                <th>ที่อยู่</th>
+                <th>วันเกิด</th>
+                <th>อายุ</th>
+                <th width="150">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.FullName</td>
+                    <td>@item.Address</td>
+                    <td>@item.Birthdate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Age</td>
+                    <td>
+                        <button class="btn btn-sm btn-info text-white" onclick="editModel(@item.Id, '@item.FullName', '@item.Birthdate.ToString("yyyy-MM-dd")', '@item.Age', '@item.Address')">View</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Create" method="post">
+                <div class="modal-body mt-3">
+                    <div class="row mb-2">
+                        <label class="col-sm-2 p-sm-1">ชื่อ - สกุล</label>
+                        <div class="col-sm-5 p-sm-1"><input name="FirstName" class="form-control" required /></div>
+                        <div class="col-sm-5 p-sm-1"><input name="LastName" class="form-control" required /></div>
+                    </div>
+                    <div class="row mb-2">
+                        <label class="col-sm-2 p-sm-1">วันเกิด</label>
+                        <div class="col-sm-5 p-sm-1"><input type="date" id="birthDateAdd" name="BirthDate" class="form-control" onchange="calculateAge()" required /></div>
+                    </div>
+                    <div class="row mb-2">
+                        <label class="col-sm-2 p-sm-1">อายุ</label>
+                        <div class="col-sm-9 p-sm-1"><span id="ageDisplay">0</span> ปี <input type="hidden" name="Age" id="ageHidden" /></div>
+                    </div>
+                    <div class="row mb-2">
+                        <label class="col-sm-2 p-sm-1">ที่อยู่</label>
+                        <div class="col-sm-10 p-sm-1"><textarea name="Address" class="form-control" rows="3"></textarea></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="viewModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body mt-3">
+                <input type="hidden" id="vId" />
+                <div class="row mb-2">
+                    <label class="col-sm-3">ชื่อ - สกุล</label>
+                    <div class="col-sm-9"><input name="FullName" id="vFullName" class="form-control" readonly /></div>
+                </div>
+                <div class="row mb-2">
+                    <label class="col-sm-3">วันเกิด</label>
+                    <div class="col-sm-9"><input type="date" id="vBirthDate" name="BirthDate" class="form-control" readonly /></div>
+                </div>
+                <div class="row mb-2">
+                    <label class="col-sm-3">อายุ</label>
+                    <div class="col-sm-9"><span id="vAgeDisplay">0</span> ปี</div>
+                </div>
+                <div class="row mb-2">
+                    <label class="col-sm-3">ที่อยู่</label>
+                    <div class="col-sm-9"><textarea name="Address" id="vAddress" class="form-control" rows="3" readonly></textarea></div>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">ปิด</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function calculateAge() {
+            const dateInput = document.getElementById('birthDateAdd').value;
+            if (dateInput) {
+                const birthYear = new Date(dateInput).getFullYear();
+                const currentYear = new Date().getFullYear();
+                const age = currentYear - birthYear;
+                document.getElementById('ageDisplay').innerText = age;
+                document.getElementById('ageHidden').value = age;
+            }
+        }
+
+        function editModel(id, name, dob, age, addr) {
+            document.getElementById('vId').value = id;
+            document.getElementById('vFullName').value = name;
+            document.getElementById('vBirthDate').value = dob;
+            document.getElementById('vAgeDisplay').innerText = age;
+            document.getElementById('vAddress').value = addr;
+            new bootstrap.Modal(document.getElementById('viewModal')).show();
+        }
+    </script>
+}

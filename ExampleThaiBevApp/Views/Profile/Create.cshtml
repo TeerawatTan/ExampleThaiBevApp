@@ -1,0 +1,115 @@
+﻿@model ExampleThaiBevApp.Dtos.ProfileDto
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="container mt-4 col-6">
+    <form id="regForm">
+        <div class="row">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="FirstName" class="control-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="LastName" class="control-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row pt-3">
+                    <div class="form-group col-md-6">
+                        <label asp-for="Email" class="control-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="Phone" class="control-label"></label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row pt-3">
+                    <div class="form-group col-md-6">
+                        <label asp-for="ProfilePicture" class="control-label">Profile</label>
+                        <div class="input-group">
+                            <input type="file" id="fileInput" class="form-control" onchange="convertToBase64()" />
+                        </div>
+                        <input type="hidden" asp-for="ProfilePicture" id="ProfileBase64" />
+                        <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="BirthDate" class="control-label">Birth Day</label>
+                        <input asp-for="BirthDate" class="form-control" type="date" />
+                        <span asp-validation-for="BirthDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row pt-3">
+                    <div class="form-group col-md-6">
+                        <label>Occupation</label>
+                        <select asp-for="Occupation" class="form-select">
+                            <option selected>-- Please select --</option>
+                            <option value="Developer">Developer</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Doctor">Doctor</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row pt-3">
+                    <div class="form-group col-md-6">
+                        <label>Sex</label><br />
+                        <input type="radio" asp-for="Sex" value="Male" /> Male
+                        <span class="px-2"></span>
+                        <input type="radio" asp-for="Sex" value="Female" /> Female
+                    </div>
+                </div>
+                <div class="row pt-3">
+                    <div class="form-group pt-3">
+                        <button type="button" onclick="saveData()" class="btn btn-primary px-5">Save</button>
+                        <button type="button" onclick="clearForm()" class="btn btn-secondary px-5">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function convertToBase64() {
+            const file = document.getElementById('fileInput').files[0];
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                document.getElementById('ProfileBase64').value = reader.result;
+            }
+            if (file) reader.readAsDataURL(file);
+        }
+
+        function saveData() {
+            if (!$('#regForm').valid()) return;
+            var formData = $('#regForm').serialize();
+            $.post('/Profile/Create', formData, function(res) {
+                if (res.success) {
+                    alert("save data success Id : " + res.id);
+                    clearForm();
+                } else {
+                    alert("กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง");
+                }
+            });
+        }
+
+        function clearForm() {
+            $('#regForm')[0].reset();
+            $('#ProfileBase64').val('');
+            $('.text-danger').text('');
+        }
+    </script>
+}

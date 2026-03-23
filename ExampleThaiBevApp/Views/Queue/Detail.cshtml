@@ -1,0 +1,13 @@
+﻿@model ExampleThaiBevApp.Models.Queue
+
+@{
+    ViewData["Title"] = "Detail Queue";
+}
+
+<div class="text-center mt-5">
+    <h5>หมายเลขคิว</h5>
+    <h1 style="font-size: 150px; font-weight: bold;">@Model.QueueNo</h1>
+    <p>วันที่ : @Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm น.")</p>
+    
+    <a asp-action="Index" class="btn btn-primary">กลับไปหน้ารับบัตรคิว</a>
+</div>

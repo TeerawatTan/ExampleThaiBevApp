@@ -1,0 +1,122 @@
+﻿@model IEnumerable<ExampleThaiBevApp.Models.Document>
+
+@{
+    ViewData["Title"] = "Document";
+}
+
+<div class="container mt-5">
+    <div class="mb-3">
+        <button class="btn btn-success" onclick="openApproveModal('อนุมัติ')">อนุมัติ</button>
+        <button class="btn btn-danger" onclick="openApproveModal('ไม่อนุมัติ')">ไม่อนุมัติ</button>
+    </div>
+
+    <table class="table table-bordered text-center">
+        <thead class="bg-primary text-white">
+            <tr>
+                <th style="width:8%;"><input type="checkbox" id="selectAll" /></th>
+                <th>รายการ</th>
+                <th>เหตุผล</th>
+                <th style="width:15%;">สถานะเอกสาร</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" class="doc-checkbox" value="@item.Id"
+                        @(item.Status != "รออนุมัติ" ? "disabled" : "") />
+                    </td>
+                    <td>@item.DocumentName</td>
+                    <td>@item.Remark</td>
+                    <td>
+                        <span class="badge @(item.Status == "อนุมัติ" ? "bg-success" : item.Status == "ไม่อนุมัติ" ? "bg-danger" : "bg-warning")">
+                            @item.Status
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="approvalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id="modalHeader" class="modal-header text-white">
+                <h5 class="modal-title" id="modalTitle">ยืนยันการอนุมัติ</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>เหตุผล :</label>
+                    <textarea id="modalRemark" class="form-control" rows="4"></textarea>
+                </div>
+                <input type="hidden" id="targetStatus" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                <button type="button" id="btnSubmit" class="btn" onclick="submitApproval()">ยืนยัน</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#selectAll').on('click', function () {
+                var isChecked = $(this).is(':checked');
+                $('.doc-checkbox').not(':disabled').prop('checked', isChecked);
+            });
+
+            $('.doc-checkbox').on('change', function () {
+                var allEnabled = $('.doc-checkbox').not(':disabled').length;
+                var allChecked = $('.doc-checkbox:checked').length;
+
+                if (allEnabled === allChecked && allEnabled > 0) {
+                    $('#selectAll').prop('checked', true);
+                } else {
+                    $('#selectAll').prop('checked', false);
+                }
+            });
+        });
+
+        function openApproveModal(status) {
+            let selectedIds = $(".doc-checkbox:checked").map(function() {
+                return $(this).val();
+            }).get();
+
+            if (selectedIds.length === 0) {
+                alert("กรุณาเลือกรายการที่ต้องการดำเนินการ");
+                return;
+            }
+
+            if (status === 'อนุมัติ') {
+                $('#modalTitle').text('ยืนยันการอนุมัติ');
+                $('#modalHeader').removeClass('bg-danger').addClass('bg-primary');
+                $('#btnSubmit').removeClass('btn-danger').addClass('btn-primary').text('อนุมัติ');
+            } else {
+                $('#modalTitle').text('ยืนยันการไม่อนุมัติ');
+                $('#modalHeader').removeClass('bg-primary').addClass('bg-danger');
+                $('#btnSubmit').removeClass('btn-primary').addClass('btn-danger').text('ไม่อนุมัติ');
+            }
+
+            $('#targetStatus').val(status);
+            $('#approvalModal').modal('show');
+        }
+
+        function submitApproval() {
+            let ids = $(".doc-checkbox:checked").map(function() { return $(this).val(); }).get();
+            let status = $('#targetStatus').val();
+            let remark = $('#modalRemark').val();
+
+            $.post('/Document/UpdateStatus', { ids: ids, status: status, remark: remark }, function(res) {
+                if (res.success) {
+                    location.reload();
+                } else {
+                    alert("บันทึกไม่สำเร็จ เกิดข้อผิดพลาดบางอย่าง");
+                }
+            });
+        }
+    </script>
+}

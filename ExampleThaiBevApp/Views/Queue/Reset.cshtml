@@ -1,0 +1,30 @@
+﻿@model ExampleThaiBevApp.Models.Queue
+
+@{
+    ViewData["Title"] = "Reset Queue";
+}
+
+<div class="text-center mt-5">
+    <button class="btn btn-primary mb-4 col-sm-2" onclick="clearQueue()">ล้างคิว</button>
+    <h5>หมายเลขคิวปัจจุบัน</h5>
+    <h1 style="font-size: 150px; font-weight: bold;" id="currentQueue">@Model.QueueNo</h1>
+    <input type="hidden" id="queueId" value="@Model.Id" />
+    <a asp-action="Index" class="btn btn-primary">กลับไปหน้ารับบัตรคิว</a>
+</div>
+
+@section Scripts {
+    <script>
+        function clearQueue() {
+            if (confirm("Are you sure?")) {
+                let id = $('#queueId').val();
+                $.post('/Queue/Reset', { id }, function(res) {
+                    if (res.success) {
+                        document.getElementById('currentQueue').innerText = "00";
+                    } else {
+                        alert("กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง");
+                    }
+                });
+            }
+        }
+    </script>
+}
