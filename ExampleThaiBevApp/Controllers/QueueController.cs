@@ -82,12 +82,7 @@ namespace ExampleThaiBevApp.Controllers
                 var que = _context.Queues.Find(id);
                 if (que != null)
                 {
-                    var newQueue = new Queue
-                    {
-                        QueueNo = "00",
-                        CreatedAt = DateTime.Now
-                    };
-                    _context.Queues.Add(newQueue);
+                    _context.Queues.RemoveRange(_context.Queues);
                     _context.SaveChanges();
                 }
                 return Json(new { success = true });
