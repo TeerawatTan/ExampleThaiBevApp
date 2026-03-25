@@ -10,24 +10,24 @@ namespace ExampleThaiBevApp.Dtos
         [Required(ErrorMessage = "กรุณากรอกนามสกุล")]
         public string LastName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Please provide a valid Email")]
-        [EmailAddress(ErrorMessage = "รูปแบบ Email ไม่ถูกต้อง")]
+        [Required(ErrorMessage = "กรุณากรอกอีเมลล์")]
+        [EmailAddress(ErrorMessage = "Please provide a valid Email")]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Please provide a valid Phone")]
-        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone ต้องเป็นตัวเลข 10 หลัก")]
+        [Required(ErrorMessage = "กรุณากรอกเบอร์โทรศัพท์")]
+        [RegularExpression(@"^0\d{9}$", ErrorMessage = "Please provide a valid Phone")]
         public string Phone { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Please selected any profile picture")]
+        [Required(ErrorMessage = "กรุณาเลือกรูปโปรไฟล์")]
         public string ProfilePicture { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Please provide a valid Birth Date")]
+        [Required(ErrorMessage = "กรุณากรอกวันเดือนปีเกิด")]
         public DateTime? BirthDate { get; set; }
 
-        [Required(ErrorMessage = "Please selected any Occupation")]
+        [Required(ErrorMessage = "กรุณาเลือกอาชีพ")]
         public string Occupation { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "กรุณาเลือกเพศ")]
         public string Sex { get; set; } = string.Empty;
     }
 }
